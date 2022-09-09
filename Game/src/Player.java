@@ -18,8 +18,11 @@ public class Player {
 //items
         int potion = 2;
         int ether = 2;
-        int sugar = 1;
+        int redbull = 1;
         int whiskey = 8;
+        int spinach = 3;
+        int moonstone = 2;
+        int armour = 3;
 
 //misc  
         int lastAtk;
@@ -105,28 +108,50 @@ public class Player {
                 this.hp -= 100;
                 this.def -= 10;
                 this.whiskey -= 1;
-                return String.format("%s drank whiskey, lost 100HP & 10 Def!", this.name);
+                return String.format("%s drank whiskey, lost 100HP & 10 defence!", this.name);
                 }else{
                     return String.format("The bottle is empty!");
                     }
 
-                case "Sugar":
-                if (this.sugar > 0){
-                this.sugar -= 1;
+                case "Red Bull":
+                if (this.redbull > 0){
+                this.redbull -= 1;
                 this.speed += 2;
-                return String.format("%s ate sugar to increase speed!", this.name);
+                return String.format("%s drank Red Bull to increase speed!", this.name);
                 }else{
-                    return String.format("No sugar left!");
-                    }
+                    return String.format("No Red Bulls left!");
                     }
 
+                case "Spinach":
+                if (this.spinach > 0){
+                this.str += 10;
+                this.spinach -= 1;
+                return String.format("%s ate spinach, strength increased by 10!", this.name);
+                }else{
+                    return String.format("No spinach left!");
+                    }
+
+                case "Moonstone":
+                if (this.moonstone > 0){
+                this.mag += 20;
+                this.moonstone -= 1;
+                return String.format("%s used moonstone, magic power increased by 20!", this.name);
+                }else{
+                    return String.format("No moonstones left!");
+                    }
+
+                case "Armour":
+                if (this.armour > 0){
+                this.def += 50;
+                this.armour -= 1;
+                return String.format("%s used armour, defence increased by 50!", this.name);
+                }else{
+                    return String.format("No armour left!");
+                    }
+
+            }
             return item;
-
         }
-
-    
-    
-        
     }
     
 

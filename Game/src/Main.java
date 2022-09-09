@@ -14,6 +14,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.Timer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,26 +31,19 @@ public class Main {
 
     }
 
-   
-    
      private static void PlaySound(File Sound){
-
-       
-        
         try{
             Clip clip = AudioSystem.getClip();
             clip.open(AudioSystem.getAudioInputStream(Sound));
             clip.start();
             // Thread.sleep(clip.getMicrosecondLength()/1000);
         } catch (Exception e) {
-
             System.out.println(e);
         }
-        
     }
 
     public static JFrame createGUI () {
-        
+
         JButton attackButton = new JButton("Attack");
         JButton fireButton = new JButton("Fire");
         JButton lightningButton = new JButton("Lightning");
@@ -71,7 +65,7 @@ public class Main {
         JLabel enemyHPL = new JLabel();
 
         //enemy char
-        Monster monster = new Monster("Dragon", 2000);
+        Monster monster = new Monster("Pedro", 2000);
         JPanel enemyc = new JPanel();
         enemyc.setBounds(500, 80, 300, 268);
         enemyc.setOpaque(false); 
@@ -89,33 +83,51 @@ public class Main {
         ImageIcon maincpic = new ImageIcon("main.png");
         mainc.add(new JLabel(maincpic));
 
+        //fire 
+        JPanel fire = new JPanel();
+        fire.setBounds(490, 60, 300, 300);
+        fire.setOpaque(false); 
+        fire.setBackground( new Color(255, 0, 0, 20) );
+        fire.setVisible(false);
+        ImageIcon firepic = new ImageIcon("fire.gif");
+        fire.add(new JLabel(firepic));
+
+         //lightning
+         JPanel lightning = new JPanel();
+         lightning.setBounds(490, 60, 300, 300);
+         lightning.setOpaque(false); 
+         lightning.setBackground( new Color(255, 0, 0, 20) );
+         lightning.setVisible(false);
+         ImageIcon lightningpic = new ImageIcon("lightning.gif");
+         lightning.add(new JLabel(lightningpic));
+
         Dimension butDim = new Dimension(110, 23);
         Dimension butDimI = new Dimension(55, 23);
-      
-        attackButton.setPreferredSize(butDim);
-        magicButton.setPreferredSize(butDim);
-        backButton.setPreferredSize(butDim);
+
         backButtonI.setPreferredSize(butDimI);
         useButton.setPreferredSize(butDimI);
-        fireButton.setPreferredSize(butDim);
-        lightningButton.setPreferredSize(butDim);
-        healButton.setPreferredSize(butDim);
-        itemButton.setPreferredSize(butDim);
+
+        JButton[] buttonsArr = {attackButton, magicButton, backButton,fireButton,lightningButton,healButton,itemButton};
+        for(JButton each : buttonsArr) {
+            each.setPreferredSize(butDim);
+        }
+       
+        JLabel[] labelsArr = {playerName, playerHPL, playerMPL, enemyHPL, combatMsgs};
+        for(JLabel each : labelsArr) {
+            each.setForeground(Color.white);
+        }
+
         playerName.setPreferredSize(new Dimension(60, 23));
-        playerName.setForeground(Color.white);
-        playerHPL.setForeground(Color.white);
-        playerMPL.setForeground(Color.white);
-        enemyHPL.setForeground(Color.white);
         playerHPL.setPreferredSize(new Dimension(60, 23));
         playerMPL.setPreferredSize(new Dimension(60, 23));
         enemyHPL.setPreferredSize(new Dimension(120, 23));
-        combatMsgs.setForeground(Color.white);
         progressBar.setPreferredSize(new Dimension(190, 23));
 
       
 //player bar
-    ActionListener updateProBar = new ActionListener() {
+     ActionListener updateProBar = new ActionListener() {
         public void actionPerformed(ActionEvent actionEvent) {
+
             //update values each timer pass
             playerHPL.setText(String.valueOf("HP:" + player.hp));
             playerMPL.setText(String.valueOf("MP:" + player.mp));
@@ -147,16 +159,18 @@ public class Main {
                 return;
             }
 
-           //enable buttons when progress bar full
+//enable buttons when progress bar full
           int val = progressBar.getValue();
+          if (val >15) {
+            lightning.setVisible(false);
+            fire.setVisible(false);
+            
+          }
           if (val >= 100) {
-            attackButton.setEnabled(true);
-            fireButton.setEnabled(true);
-            lightningButton.setEnabled(true);
-            healButton.setEnabled(true);
-            useButton.setEnabled(true);
-          
-     
+      
+            for(JButton each : buttonsArr) {
+                each.setEnabled(true);
+            }
           }
           
           progressBar.setValue(val + player.speed);
@@ -165,11 +179,11 @@ public class Main {
       };
 
 
-      //enemy bar
+//enemy bar
       ActionListener updateEProBar = new ActionListener() {
         public void actionPerformed(ActionEvent actionEvent) {
 
-          //  monster animations
+ //  monster animations
             int currentX = enemyc.getBounds().x;
             int maxX = -9, maxY = -9, minX = 9, minY = 9;
             int rangeX = maxX - minX + 1;
@@ -229,7 +243,7 @@ public class Main {
         public void actionPerformed(ActionEvent e) {
 
             File music = new File("bgmusic.wav");
-            PlaySound(music);
+            // PlaySound(music);
             
           if (timer.isRunning()) {
             timer.stop();
@@ -243,93 +257,9 @@ public class Main {
         }
       });
 
-
-
-        attackButton.setEnabled(false);
-        fireButton.setEnabled(false);
-        lightningButton.setEnabled(false);
-        healButton.setEnabled(false);
-        useButton.setEnabled(false);
-
-//Player attack
-            attackButton.addActionListener(event -> {
-            PlaySound(player.attackSound);
-            mainc.setBounds(550, 240, 122, 85);
-            monster.hp -= player.attack();
-            combatMsgs.setText(String.format("%s attacked %s for %d HP!", player.name, monster.name, player.lastAtk));
-            progressBar.setValue(0);
-            attackButton.setEnabled(false);
-            fireButton.setEnabled(false);
-            lightningButton.setEnabled(false);
-            healButton.setEnabled(false);
-            useButton.setEnabled(false);
-
-        });
-//player fire magic
-
-          fireButton.addActionListener(event -> {
-
-            if (player.mp >= 50) {
-                PlaySound(player.fireSound);
-     
-
-            monster.hp -= player.fire();
-            combatMsgs.setText(String.format("%s cast fire spell for %d HP!", player.name, player.lastAtk));
-
-
-            progressBar.setValue(0);
-     
-            attackButton.setEnabled(false);
-            fireButton.setEnabled(false);
-            lightningButton.setEnabled(false);
-            healButton.setEnabled(false);
-            useButton.setEnabled(false);
-
-            } else {
-                combatMsgs.setText(String.format("Not enough MP!"));
-            }
-          
-        });
-//player lightning magic
-
-        lightningButton.addActionListener(event -> {
-
-            if (player.mp >= 40) {
-
-                PlaySound(player.lightningSound);
-                monster.hp -= player.lightning();
-                combatMsgs.setText(String.format("%s cast lightning spell for %d HP!", player.name, player.lastAtk));
-                progressBar.setValue(0);
-                attackButton.setEnabled(false);
-                fireButton.setEnabled(false);
-                lightningButton.setEnabled(false);
-                healButton.setEnabled(false);
-                useButton.setEnabled(false);
-    
-                } else {
-                    combatMsgs.setText(String.format("Not enough MP!"));
-                }
-              
-            });
-//player heal magic
-
-        healButton.addActionListener(event -> {
-            if (player.mp >= 30) {
-                combatMsgs.setText(player.heal());
-                progressBar.setValue(0);
-                attackButton.setEnabled(false);
-                fireButton.setEnabled(false);
-                lightningButton.setEnabled(false);
-                healButton.setEnabled(false);
-                useButton.setEnabled(false);
-    
-             } else {
-                    combatMsgs.setText(String.format("Not enough MP!"));
-            }
-          
-        });
-
-
+        for(JButton each : buttonsArr) {
+            each.setEnabled(false);
+        }
 
 
         JFrame gui = new JFrame("Battle system");
@@ -337,10 +267,6 @@ public class Main {
         gui.getContentPane().setBackground(Color.black);
         gui.setLayout(null);
       
-
-        
-
-       
 
         JPanel controlPanel1;
         controlPanel1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -375,14 +301,11 @@ public class Main {
             
           });
 
-       
 
-         
 
           DefaultListModel<String> l1 = new DefaultListModel<>();  
           JList<String> list = new JList<>(l1);  
-          list.setPreferredSize(new Dimension(110, 70));
-
+      
 
 
           JPanel controlPanel2ITEMS;
@@ -390,7 +313,10 @@ public class Main {
           controlPanel2ITEMS = new JPanel(new FlowLayout(FlowLayout.LEFT));
           controlPanel2ITEMS.setBounds(200, 350, 150, 150);
           controlPanel2ITEMS.setBackground(Color.blue);
-          controlPanel2ITEMS.add(list);
+          JScrollPane scrollpane = new JScrollPane(list);
+          scrollpane.setPreferredSize(new Dimension(120, 70));
+       
+           controlPanel2ITEMS.add(scrollpane);
           controlPanel2ITEMS.add(useButton);
           controlPanel2ITEMS.add(backButtonI);
           controlPanel2ITEMS.setVisible(false);
@@ -409,13 +335,102 @@ public class Main {
             controlPanel2.setVisible(true);
             
           });
+
+
+//Player attack
+attackButton.addActionListener(event -> {
+    PlaySound(player.attackSound);
+    mainc.setBounds(550, 240, 122, 85);
+    monster.hp -= player.attack();
+    combatMsgs.setText(String.format("%s attacked %s for %d HP!", player.name, monster.name, player.lastAtk));
+    progressBar.setValue(0);
+
+    for(JButton each : buttonsArr) {
+        each.setEnabled(false);
+    }
+
+});
+//player fire magic
+
+  fireButton.addActionListener(event -> {
+
+    if (player.mp >= 50) {
+        PlaySound(player.fireSound);
+        fire.setVisible(true);
+
+
+    monster.hp -= player.fire();
+    combatMsgs.setText(String.format("%s cast fire spell for %d HP!", player.name, player.lastAtk));
+
+
+    progressBar.setValue(0);
+
+    for(JButton each : buttonsArr) {
+        each.setEnabled(false);
+    }
+    controlPanel2MAGIC.setVisible(false);
+    controlPanel2.setVisible(true);
+
+    } else {
+        combatMsgs.setText(String.format("Not enough MP!"));
+    }
+  
+});
+//player lightning magic
+
+lightningButton.addActionListener(event -> {
+
+    if (player.mp >= 40) {
+
+        PlaySound(player.lightningSound);
+        lightning.setVisible(true);
+        monster.hp -= player.lightning();
+        combatMsgs.setText(String.format("%s cast lightning spell for %d HP!", player.name, player.lastAtk));
+        progressBar.setValue(0);
+
+        for(JButton each : buttonsArr) {
+            each.setEnabled(false);
+        }
+        controlPanel2MAGIC.setVisible(false);
+        controlPanel2.setVisible(true);
+
+        } else {
+            combatMsgs.setText(String.format("Not enough MP!"));
+        }
+      
+    });
+//player heal magic
+
+
+
+
+          healButton.addActionListener(event -> {
+            if (player.mp >= 30) {
+                combatMsgs.setText(player.heal());
+                progressBar.setValue(0);
+
+                for(JButton each : buttonsArr) {
+                    each.setEnabled(false);
+                }
+
+                controlPanel2MAGIC.setVisible(false);
+                controlPanel2.setVisible(true);
+    
+             } else {
+                    combatMsgs.setText(String.format("Not enough MP!"));
+            }
+          
+        });
           
           itemButton.addActionListener(event -> {
             l1.removeAllElements();
               l1.addElement("Potion x " + player.potion);  
               l1.addElement("Ether x " + player.ether);  
-              l1.addElement("Sugar x " + player.sugar);  
+              l1.addElement("Red Bull x " + player.redbull);  
               l1.addElement("Whiskey x " + player.whiskey); 
+              l1.addElement("Spinach x " + player.spinach); 
+              l1.addElement("Moonstone x " + player.moonstone); 
+              l1.addElement("Armour x " + player.armour); 
             controlPanel2ITEMS.setVisible(true);
             controlPanel2MAGIC.setVisible(false);
             controlPanel2.setVisible(false);
@@ -429,7 +444,10 @@ public class Main {
             controlPanel2ITEMS.setVisible(false);
             controlPanel2.setVisible(true);
             progressBar.setValue(0);
-            useButton.setEnabled(false);
+
+            for(JButton each : buttonsArr) {
+                each.setEnabled(false);
+            }
      });
     
          
@@ -471,7 +489,10 @@ public class Main {
         gui.getContentPane().add(controlPanel4);
         gui.getContentPane().add(messagePanel);
         gui.getContentPane().add(mainc);
+        gui.getContentPane().add(fire);
+        gui.getContentPane().add(lightning);
         gui.getContentPane().add(enemyc);
+       
         gui.getContentPane().add(backg);
         gui.setLocationRelativeTo(null);
       
