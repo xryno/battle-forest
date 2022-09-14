@@ -1,6 +1,7 @@
 package Game.src;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Player {
 
@@ -16,21 +17,26 @@ public class Player {
         int mag = 30;
 
 //items
-        int potion = 2;
-        int ether = 2;
-        int redbull = 1;
-        int whiskey = 8;
-        int spinach = 3;
-        int moonstone = 2;
-        int armour = 3;
+       static int potion = 2;
+       static int ether = 2;
+       static int redbull = 1;
+       static int whiskey = 8;
+       static int spinach = 3;
+       static int moonstone = 2;
+       static int armour = 3;
 
 //misc  
         int lastAtk;
+        static ArrayList<Player> active = new ArrayList<Player>(0);
+        static int player1Time = 180;
+        static int player2Time = 165;
+        
 //sounds
 
-        File attackSound = new File("attack.wav");
-        File fireSound = new File("fire.wav");
-        File lightningSound = new File("lightning.wav");
+        File attackSound = new File("game/src/attack.wav");
+        File fireSound = new File("game/src/fire.wav");
+        File lightningSound = new File("game/src/lightning.wav");
+        File heal = new File("game/src/heal.wav");
     
         Player(String name, int hp, int mp){
          this.name = name;
@@ -40,18 +46,19 @@ public class Player {
     
         public int attack() {
             
-            int max = 1500;
+            int max = 250;
             int min = 67;
             int range = max - min + 1;
             this.lastAtk = (int) (Math.random() *  range) + min + this.str;
+
             return this.lastAtk;
         
         }
 
         public int fire() {
 
-             int max = 250;
-             int min = 120;
+             int max = 450;
+             int min = 230;
              int range = max - min + 1;
              this.lastAtk = (int) (Math.random() *  range) + min + this.mag;
              this.mp -= 50;
@@ -60,8 +67,8 @@ public class Player {
 
         public int lightning() {
         
-            int max = 190;
-            int min = 100;
+            int max = 440;
+            int min = 220;
             int range = max - min + 1;
             this.lastAtk = (int) (Math.random() *  range) + min + this.mag;
             this.mp -= 40;
@@ -70,7 +77,7 @@ public class Player {
 
         public String heal() {
     
-            int max = 280;
+            int max = 350;
             int min = 200;
             int range = max - min + 1;
             int healVal = (int) (Math.random() *  range) + min ;
@@ -86,36 +93,36 @@ public class Player {
 
                 case "Potion":
 
-                if (this.potion > 0){
-                this.hp += 200;
-                this.potion -= 1;
+                if (Player.potion > 0){
+                this.hp += 400;
+                Player.potion -= 1;
                 return String.format("%s used potion to heal 200HP!", this.name);
                 }else{
                 return String.format("No potions remaining!");
                 }
 
                 case "Ether":
-                if (this.potion > 0){
+                if (Player.ether > 0){
                 this.mp += 100;
-                this.ether -= 1;
+                Player.ether -= 1;
                 return String.format("%s used ether for 100MP increase!", this.name);
                 }else{
                     return String.format("No ethers remaining!");
                     }
 
                 case "Whiskey":
-                if (this.whiskey > 0){
+                if (Player.whiskey > 0){
                 this.hp -= 100;
                 this.def -= 10;
-                this.whiskey -= 1;
+                Player.whiskey -= 1;
                 return String.format("%s drank whiskey, lost 100HP & 10 defence!", this.name);
                 }else{
                     return String.format("The bottle is empty!");
                     }
 
                 case "Red Bull":
-                if (this.redbull > 0){
-                this.redbull -= 1;
+                if (Player.redbull > 0){
+                    Player.redbull -= 1;
                 this.speed += 2;
                 return String.format("%s drank Red Bull to increase speed!", this.name);
                 }else{
@@ -123,27 +130,27 @@ public class Player {
                     }
 
                 case "Spinach":
-                if (this.spinach > 0){
+                if (Player.spinach > 0){
                 this.str += 10;
-                this.spinach -= 1;
+                Player.spinach -= 1;
                 return String.format("%s ate spinach, strength increased by 10!", this.name);
                 }else{
                     return String.format("No spinach left!");
                     }
 
                 case "Moonstone":
-                if (this.moonstone > 0){
+                if (Player.moonstone > 0){
                 this.mag += 20;
-                this.moonstone -= 1;
+                Player.moonstone -= 1;
                 return String.format("%s used moonstone, magic power increased by 20!", this.name);
                 }else{
                     return String.format("No moonstones left!");
                     }
 
                 case "Armour":
-                if (this.armour > 0){
+                if (Player.armour > 0){
                 this.def += 50;
-                this.armour -= 1;
+                Player.armour -= 1;
                 return String.format("%s used armour, defence increased by 50!", this.name);
                 }else{
                     return String.format("No armour left!");
